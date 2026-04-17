@@ -5,6 +5,7 @@
 
   <ItemGroup Label="Aspire">
     <PackageVersion Include="Aspire.Hosting"                           Version="8.2.2" />
+    <PackageVersion Include="Aspire.Hosting.AppHost"                   Version="8.2.2" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ"                  Version="8.2.2" />
     <PackageVersion Include="Aspire.Hosting.Seq"                       Version="8.2.2" />
     <PackageVersion Include="Aspire.RabbitMQ.Client"                   Version="8.2.2" />
