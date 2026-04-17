@@ -1,18 +1,20 @@
 using Messaging.Consumer.NServiceBus;
+using Messaging.ServiceDefaults;
+using Microsoft.Extensions.Hosting;
+using NServiceBus;
 
-var builder = Host.CreateApplicationBuilder(args);
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.AddServiceDefaults();
 
-builder.UseNServiceBus(endpointConfig =>
-{
-    endpointConfig.EndpointName("messaging.consumer.nsb");
+EndpointConfiguration endpointConfig = new("messaging.consumer.nsb");
 
-    var transport = endpointConfig.UseTransport<RabbitMQTransport>();
-    transport.ConnectionString(builder.Configuration.GetConnectionString("rabbitmq")!);
-    transport.UseConventionalRoutingTopology(QueueType.Quorum);
+TransportExtensions<RabbitMQTransport> transport = endpointConfig.UseTransport<RabbitMQTransport>();
+transport.ConnectionString(builder.Configuration.GetConnectionString("rabbitmq")!);
+transport.UseConventionalRoutingTopology(QueueType.Quorum);
 
-    endpointConfig.UseSerialization<SystemJsonSerializer>();
-    endpointConfig.EnableInstallers();
-});
+endpointConfig.UseSerialization<SystemJsonSerializer>();
+endpointConfig.EnableInstallers();
+
+builder.UseNServiceBus(endpointConfig);
 
 builder.Build().Run();

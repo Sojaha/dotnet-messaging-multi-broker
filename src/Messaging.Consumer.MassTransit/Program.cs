@@ -1,9 +1,10 @@
 using MassTransit;
-using Messaging.Contracts.Orders.Events;
-using Messaging.Contracts.Topology;
 using Messaging.Consumer.MassTransit;
+using Messaging.Contracts.Topology;
+using Messaging.ServiceDefaults;
+using Microsoft.Extensions.Hosting;
 
-var builder = Host.CreateApplicationBuilder(args);
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.AddServiceDefaults();
 
 builder.Services.AddMassTransit(x =>
@@ -26,7 +27,6 @@ builder.Services.AddMassTransit(x =>
                 b.RoutingKey   = RoutingKeys.OrderPlaced;
                 b.ExchangeType = "topic";
             });
-            ep.ConfigureDeadLetterQueueErrorTransport();
             ep.ConfigureConsumer<OrderPlacedConsumer>(ctx);
         });
 
@@ -37,7 +37,6 @@ builder.Services.AddMassTransit(x =>
                 b.RoutingKey   = RoutingKeys.OrderCancelled;
                 b.ExchangeType = "topic";
             });
-            ep.ConfigureDeadLetterQueueErrorTransport();
             ep.ConfigureConsumer<OrderCancelledConsumer>(ctx);
         });
     });

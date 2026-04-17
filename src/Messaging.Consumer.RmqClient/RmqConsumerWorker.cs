@@ -49,11 +49,19 @@ public sealed class RmqConsumerWorker(
                 var message = (IMessage)JsonSerializer.Deserialize(
                     ea.Body.Span, type, MessagingJsonOptions.Default)!;
 
-                // Restore CorrelationId into ambient Activity for OTel span linking
-                var correlationId = message.CorrelationId;
-                using var activity = new System.Diagnostics.Activity("messaging.consume");
-                if (System.Diagnostics.ActivityTraceId.TryParse(correlationId, out var traceId))
-                    activity.SetParentId(traceId, default, System.Diagnostics.ActivityTraceFlags.Recorded);
+                // Restore CorrelationId into ambient Activity for OTel span linking.
+                // A valid W3C trace ID is exactly 32 lowercase hex characters;
+                // a fallback Guid will be 36 chars with hyphens and is skipped.
+                string correlationId = message.CorrelationId;
+                using System.Diagnostics.Activity activity = new("messaging.consume");
+                if (correlationId is { Length: 32 })
+                {
+                    activity.SetParentId(
+                        System.Diagnostics.ActivityTraceId.CreateFromString(correlationId.AsSpan()),
+                        System.Diagnostics.ActivitySpanId.CreateRandom(),
+                        System.Diagnostics.ActivityTraceFlags.Recorded);
+                }
+
                 activity.Start();
 
                 await dispatcher.DispatchAsync(message, ea.BasicProperties, channel, ct);

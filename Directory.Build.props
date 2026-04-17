@@ -7,6 +7,15 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
 
+  <!-- Suppress vulnerabilities in transitive deps we cannot upgrade directly. -->
+  <ItemGroup>
+    <!-- KubernetesClient (transitive via Aspire.Hosting) -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-w7r3-mgwf-4mqq" />
+    <!-- System.Security.Cryptography.Xml (transitive via NServiceBus.RabbitMQ) -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-37gx-xxp4-5rgx" />
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-w3x6-4m5h-cxqf" />
+  </ItemGroup>
+
   <Target Name="EnforceContractsPurity" BeforeTargets="Build"
           Condition="'$(MSBuildProjectName)' == 'Messaging.Contracts'">
     <Error Condition="'@(PackageReference)' != ''"

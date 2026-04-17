@@ -4,13 +4,12 @@
   </PropertyGroup>
 
   <ItemGroup Label="Aspire">
-    <PackageVersion Include="Aspire.Hosting"                           Version="8.2.2" />
-    <PackageVersion Include="Aspire.Hosting.AppHost"                   Version="8.2.2" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ"                  Version="8.2.2" />
-    <PackageVersion Include="Aspire.Hosting.Seq"                       Version="8.2.2" />
-    <PackageVersion Include="Aspire.RabbitMQ.Client"                   Version="8.2.2" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting"             Version="8.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+    <PackageVersion Include="Aspire.Hosting"                           Version="13.2.2" />
+    <PackageVersion Include="Aspire.Hosting.AppHost"                   Version="13.2.2" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ"                  Version="13.2.2" />
+    <PackageVersion Include="Aspire.Hosting.Seq"                       Version="13.2.2" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting"             Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="RabbitMQ">
@@ -23,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup Label="NServiceBus">
-    <PackageVersion Include="NServiceBus"                              Version="9.2.0" />
+    <PackageVersion Include="NServiceBus"                              Version="9.2.2" />
     <PackageVersion Include="NServiceBus.RabbitMQ"                     Version="9.1.0" />
     <PackageVersion Include="NServiceBus.Extensions.Hosting"           Version="3.0.0" />
   </ItemGroup>
@@ -33,11 +32,15 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting"         Version="1.9.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime"    Version="1.9.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting"               Version="8.0.0" />
-    <PackageVersion Include="Serilog.Sinks.OpenTelemetry"              Version="4.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Seq"                        Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Serialization">
     <PackageVersion Include="Microsoft.Extensions.Options"             Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup Label="DI">
+    <PackageVersion Include="Scrutor"                                   Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup Label="Tests">

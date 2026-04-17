@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="../Messaging.Infrastructure/Messaging.Infrastructure.csproj" />
     <ProjectReference Include="../../aspire/Messaging.ServiceDefaults/Messaging.ServiceDefaults.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="MassTransit" />
     <PackageReference Include="MassTransit.RabbitMQ" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 namespace Messaging.Contracts.Tests;
 
 using FluentAssertions;
+using Xunit;
 using Messaging.Contracts.Orders.Events;
 using Messaging.Contracts.Orders.Queries;
 using Messaging.Contracts.Topology;

@@ -9,6 +9,7 @@ using Messaging.Contracts.Versioning;
 using Messaging.Infrastructure;
 using Messaging.Infrastructure.Publishing;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 public sealed class PublisherWorker(
     MessagePublisher publisher,
