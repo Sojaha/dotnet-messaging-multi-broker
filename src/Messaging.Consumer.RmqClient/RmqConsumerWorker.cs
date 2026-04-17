@@ -1,5 +1,6 @@
 namespace Messaging.Consumer.RmqClient;
 
+using System.Text;
 using System.Text.Json;
 using Messaging.Contracts;
 using Messaging.Contracts.Topology;
@@ -16,7 +17,7 @@ public sealed class RmqConsumerWorker(
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        var channel = await connection.CreateChannelAsync(cancellationToken: ct);
+        IChannel channel = await connection.CreateChannelAsync(cancellationToken: ct);
 
         await TopologyInitializer.DeclareAsync(channel, ct);
 
@@ -36,17 +37,19 @@ public sealed class RmqConsumerWorker(
 
         await channel.BasicQosAsync(0, prefetchCount: 10, global: false, cancellationToken: ct);
 
-        var consumer = new AsyncEventingBasicConsumer(channel);
+        AsyncEventingBasicConsumer consumer = new(channel);
         consumer.ReceivedAsync += async (_, ea) =>
         {
-            var retryCount = GetRetryCount(ea.BasicProperties);
+            int retryCount = GetRetryCount(ea.BasicProperties);
             try
             {
-                var typeName = ea.BasicProperties.Headers?["x-message-type"] as string
+                // RabbitMQ.Client delivers AMQP string headers as byte[] on the wire.
+                // Cast via as string always returns null — use ReadHeaderString instead.
+                string typeName = ReadHeaderString(ea.BasicProperties.Headers, "x-message-type")
                     ?? throw new InvalidOperationException("Missing x-message-type header");
 
-                var type    = MessageTypeRegistry.Resolve(typeName);
-                var message = (IMessage)JsonSerializer.Deserialize(
+                Type type = MessageTypeRegistry.Resolve(typeName);
+                IMessage message = (IMessage)JsonSerializer.Deserialize(
                     ea.Body.Span, type, MessagingJsonOptions.Default)!;
 
                 // Restore CorrelationId into ambient Activity for OTel span linking.
@@ -80,22 +83,40 @@ public sealed class RmqConsumerWorker(
             }
         };
 
-        var queues = new[]
-        {
+        string[] queues =
+        [
             Queues.RmqClientOrderPlaced,
             Queues.RmqClientOrderCancelled,
             Queues.CancelOrder,
             Queues.GetOrderStatus,
-        };
+        ];
 
-        foreach (var queue in queues)
+        foreach (string queue in queues)
             await channel.BasicConsumeAsync(queue, autoAck: false, consumer, cancellationToken: ct);
 
         await Task.Delay(Timeout.Infinite, ct);
     }
 
+    /// <summary>
+    /// Reads a string header from an AMQP header dictionary.
+    /// RabbitMQ.Client 7.x delivers string-valued headers as UTF-8 byte arrays;
+    /// a direct cast to string always returns null.
+    /// </summary>
+    private static string? ReadHeaderString(IDictionary<string, object?>? headers, string key)
+    {
+        if (headers is null || !headers.TryGetValue(key, out object? value))
+            return null;
+
+        return value switch
+        {
+            string s => s,
+            byte[] b => Encoding.UTF8.GetString(b),
+            _        => null,
+        };
+    }
+
     private static int GetRetryCount(IReadOnlyBasicProperties props)
-        => props.Headers?.TryGetValue("x-retry-count", out var v) == true && v is int i ? i : 0;
+        => props.Headers?.TryGetValue("x-retry-count", out object? v) == true && v is int i ? i : 0;
 
     private static void SetRetryCount(IReadOnlyBasicProperties props, int count)
     {
