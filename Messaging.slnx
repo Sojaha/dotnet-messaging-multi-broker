@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Messaging.Contracts/Messaging.Contracts.csproj" />
+    <Project Path="src/Messaging.Infrastructure/Messaging.Infrastructure.csproj" />
+    <Project Path="src/Messaging.Publisher/Messaging.Publisher.csproj" />
+    <Project Path="src/Messaging.Consumer.NServiceBus/Messaging.Consumer.NServiceBus.csproj" />
+    <Project Path="src/Messaging.Consumer.MassTransit/Messaging.Consumer.MassTransit.csproj" />
+    <Project Path="src/Messaging.Consumer.RmqClient/Messaging.Consumer.RmqClient.csproj" />
+  </Folder>
+  <Folder Name="/aspire/">
+    <Project Path="aspire/Messaging.AppHost/Messaging.AppHost.csproj" />
+    <Project Path="aspire/Messaging.ServiceDefaults/Messaging.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Messaging.Contracts.Tests/Messaging.Contracts.Tests.csproj" />
+  </Folder>
+</Solution>

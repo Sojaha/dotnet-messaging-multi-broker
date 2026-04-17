@@ -8,4 +8,4 @@ obj/
 *.userprefs
 *.DS_Store
 .idea/
-*.slnx
+*.sln
