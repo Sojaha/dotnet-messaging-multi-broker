@@ -2,7 +2,9 @@
   <ItemGroup>
     <ProjectReference Include="../Messaging.Infrastructure/Messaging.Infrastructure.csproj" />
     <ProjectReference Include="../../aspire/Messaging.ServiceDefaults/Messaging.ServiceDefaults.csproj" />
-    <PackageReference Include="Aspire.RabbitMQ.Client" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Scrutor" />
+    <!-- Aspire.RabbitMQ.Client 8/9.x pins RabbitMQ.Client < 7.0.0 which conflicts
+         with the 7.x IChannel API. Register IConnection directly instead. -->
   </ItemGroup>
 </Project>

@@ -24,8 +24,9 @@ public sealed class MessageDispatcher(
         // Command — fire and forget, handler publishes downstream event
         CancelOrder    m => HandleAsync(m, ct),
 
-        // Query — must send a reply
-        GetOrderStatus m => HandleAsync(m, props, ct),
+        // Query — must send a reply; channel is passed through so QueryReplyPublisher
+        // uses the worker's channel rather than requiring its own DI-registered one.
+        GetOrderStatus m => HandleAsync(m, props, channel, ct),
 
         _ => Task.CompletedTask,
     };
@@ -62,19 +63,23 @@ public sealed class MessageDispatcher(
 
     // ── Query handler ─────────────────────────────────────────────────────────
 
-    private async Task HandleAsync(GetOrderStatus m, IReadOnlyBasicProperties props, CancellationToken ct)
+    private async Task HandleAsync(
+        GetOrderStatus m,
+        IReadOnlyBasicProperties props,
+        IChannel channel,
+        CancellationToken ct)
     {
         logger.LogInformation(
             "[RmqClient][Query] GetOrderStatus — OrderId={OrderId} CorrelationId={CorrelationId}",
             m.OrderId, m.CorrelationId);
 
-        var result = new OrderStatusResult(
+        OrderStatusResult result = new(
             OrderId:       m.OrderId,
             Status:        "Confirmed",    // stub — real implementation queries a DB
             CorrelationId: m.CorrelationId);
 
         if (props.ReplyTo is not null)
-            await replyPublisher.ReplyAsync(result, props.ReplyTo, m.CorrelationId, ct);
+            await replyPublisher.ReplyAsync(result, props.ReplyTo, m.CorrelationId, channel, ct);
         else
             logger.LogWarning("[RmqClient][Query] GetOrderStatus received without ReplyTo — no reply sent");
     }
