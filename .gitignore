@@ -1,0 +1,11 @@
+## .gitignore for .NET / Aspire
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
+*.DS_Store
+.idea/
+*.slnx

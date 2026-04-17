@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+  <ItemGroup>
+    <ProjectReference Include="../Messaging.Infrastructure/Messaging.Infrastructure.csproj" />
+    <ProjectReference Include="../../aspire/Messaging.ServiceDefaults/Messaging.ServiceDefaults.csproj" />
+    <PackageReference Include="RabbitMQ.Client" />
+  </ItemGroup>
+</Project>
