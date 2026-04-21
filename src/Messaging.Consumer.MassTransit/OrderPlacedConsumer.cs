@@ -4,6 +4,7 @@
 
 using global::MassTransit;
 using Messaging.Contracts.Orders.Events;
+using SerilogContext = Serilog.Context.LogContext;
 
 namespace Messaging.Consumer.MassTransit;
 
@@ -12,6 +13,7 @@ public sealed class OrderPlacedConsumer(ILogger<OrderPlacedConsumer> logger)
 {
     public Task Consume(ConsumeContext<OrderPlaced> context)
     {
+        using IDisposable correlationScope = SerilogContext.PushProperty("CorrelationId", context.Message.CorrelationId);
         logger.LogInformation("[MassTransit] OrderPlaced — OrderId={OrderId}", context.Message.OrderId);
         return Task.CompletedTask;
     }

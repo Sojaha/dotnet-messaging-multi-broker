@@ -10,6 +10,7 @@ using Messaging.Infrastructure;
 using Messaging.Infrastructure.Publishing;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Serilog.Context;
 using System.Diagnostics;
 
 namespace Messaging.Publisher;
@@ -35,6 +36,9 @@ public sealed class PublisherWorker(
             // A consumer that publishes a downstream message MUST propagate this value.
             string correlationId = Activity.Current?.TraceId.ToString()
                                    ?? Guid.NewGuid().ToString();
+
+            // Enrich all log entries for this publish cycle with the CorrelationId.
+            using IDisposable correlationScope = LogContext.PushProperty("CorrelationId", correlationId);
 
             // ── 1. Event — broadcast to all consumers ─────────────────────
             OrderPlaced placed = new(

@@ -4,6 +4,7 @@
 
 using global::MassTransit;
 using Messaging.Contracts.Orders.Events;
+using SerilogContext = Serilog.Context.LogContext;
 
 namespace Messaging.Consumer.MassTransit;
 
@@ -12,6 +13,7 @@ public sealed class OrderCancelledConsumer(ILogger<OrderCancelledConsumer> logge
 {
     public Task Consume(ConsumeContext<OrderCancelled> context)
     {
+        using IDisposable correlationScope = SerilogContext.PushProperty("CorrelationId", context.Message.CorrelationId);
         logger.LogInformation("[MassTransit] OrderCancelled — OrderId={OrderId} Reason={Reason}",
             context.Message.OrderId, context.Message.Reason);
         return Task.CompletedTask;

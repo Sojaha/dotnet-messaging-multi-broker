@@ -9,6 +9,7 @@ using Messaging.Infrastructure.Serialization;
 using Messaging.Infrastructure.Topology;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Serilog.Context;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -68,6 +69,10 @@ public sealed class RmqConsumerWorker(
                 Type type = MessageTypeRegistry.Resolve(typeName);
                 IMessage message = (IMessage)JsonSerializer.Deserialize(
                     ea.Body.Span, type, MessagingJsonOptions.Default)!;
+
+                // Enrich all log entries within this processing scope with the
+                // business-level CorrelationId so it appears in Seq / Aspire dashboard.
+                using IDisposable correlationScope = LogContext.PushProperty("CorrelationId", message.CorrelationId);
 
                 activity?.SetTag("messaging.system", "rabbitmq")
                          .SetTag("messaging.operation", "receive")
