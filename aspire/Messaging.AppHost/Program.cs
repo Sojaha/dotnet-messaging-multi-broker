@@ -1,12 +1,18 @@
-var builder = DistributedApplication.CreateBuilder(args);
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Aspire.Hosting;
+
+IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
 // ── Infrastructure ──────────────────────────────────────────────────────────
 
-var rabbit = builder.AddRabbitMQ("rabbitmq")
+IResourceBuilder<RabbitMQServerResource> rabbit = builder.AddRabbitMQ("rabbitmq")
     .WithManagementPlugin()          // exposes :15672 management UI
     .WithLifetime(ContainerLifetime.Persistent);
 
-var seq = builder.AddSeq("seq")
+IResourceBuilder<SeqResource> seq = builder.AddSeq("seq")
     .WithLifetime(ContainerLifetime.Persistent);
 
 // ── Services ────────────────────────────────────────────────────────────────

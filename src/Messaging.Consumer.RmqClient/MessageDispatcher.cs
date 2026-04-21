@@ -1,4 +1,6 @@
-namespace Messaging.Consumer.RmqClient;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using Messaging.Contracts;
 using Messaging.Contracts.Orders.Commands;
@@ -6,6 +8,8 @@ using Messaging.Contracts.Orders.Events;
 using Messaging.Contracts.Orders.Queries;
 using Messaging.Infrastructure.Publishing;
 using RabbitMQ.Client;
+
+namespace Messaging.Consumer.RmqClient;
 
 public sealed class MessageDispatcher(
     QueryReplyPublisher replyPublisher,

@@ -1,4 +1,6 @@
-namespace Messaging.Publisher;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
 using Messaging.Contracts.Orders.Commands;
@@ -11,6 +13,8 @@ using Messaging.Infrastructure.Publishing;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
+namespace Messaging.Publisher;
+
 public sealed class PublisherWorker(
     MessagePublisher publisher,
     IConnection connection,
@@ -18,23 +22,23 @@ public sealed class PublisherWorker(
 {
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        await using var channel = await connection.CreateChannelAsync(cancellationToken: ct);
+        await using IChannel channel = await connection.CreateChannelAsync(cancellationToken: ct);
 
         // Declare all exchanges (publisher only — queues are owned by consumers)
         await TopologyInitializer.DeclareAsync(channel, ct);
 
         while (!ct.IsCancellationRequested)
         {
-            var orderId = Guid.NewGuid();
+            Guid orderId = Guid.NewGuid();
 
             // CorrelationId comes from the ambient Activity TraceId created by Aspire/OTel.
             // If no Activity exists (e.g. in a background job), fall back to a new Guid.
             // A consumer that publishes a downstream message MUST propagate this value.
-            var correlationId = Activity.Current?.TraceId.ToString()
-                                ?? Guid.NewGuid().ToString();
+            string correlationId = Activity.Current?.TraceId.ToString()
+                                   ?? Guid.NewGuid().ToString();
 
             // ── 1. Event — broadcast to all consumers ─────────────────────
-            var placed = new OrderPlaced(
+            OrderPlaced placed = new(
                 MessageId:     Guid.NewGuid(),
                 CorrelationId: correlationId,
                 OccurredOn:    DateTimeOffset.UtcNow,
@@ -50,7 +54,7 @@ public sealed class PublisherWorker(
             await Task.Delay(TimeSpan.FromSeconds(3), ct);
 
             // ── 2. Command — point-to-point to one service ────────────────
-            var cancel = new CancelOrder(
+            CancelOrder cancel = new(
                 MessageId:     Guid.NewGuid(),
                 CorrelationId: correlationId,  // same correlation — same logical operation
                 OccurredOn:    DateTimeOffset.UtcNow,
@@ -65,11 +69,11 @@ public sealed class PublisherWorker(
             await Task.Delay(TimeSpan.FromSeconds(3), ct);
 
             // ── 3. Query — request/reply ───────────────────────────────────
-            var replyQueueName = (await channel.QueueDeclareAsync(
+            string replyQueueName = (await channel.QueueDeclareAsync(
                 queue: string.Empty, durable: false, exclusive: true,
                 autoDelete: true, cancellationToken: ct)).QueueName;
 
-            var query = new GetOrderStatus(
+            GetOrderStatus query = new(
                 MessageId:     Guid.NewGuid(),
                 CorrelationId: correlationId,
                 OccurredOn:    DateTimeOffset.UtcNow,
@@ -80,7 +84,7 @@ public sealed class PublisherWorker(
             logger.LogInformation("[Query] GetOrderStatus sent {OrderId}, reply queue: {ReplyQueue}",
                 orderId, replyQueueName);
 
-            var reply = await WaitForReplyAsync<OrderStatusResult>(channel, replyQueueName, ct);
+            OrderStatusResult? reply = await WaitForReplyAsync<OrderStatusResult>(channel, replyQueueName, ct);
             logger.LogInformation("[Query] OrderStatusResult received — Status={Status}", reply?.Status);
 
             await Task.Delay(TimeSpan.FromSeconds(5), ct);
@@ -90,12 +94,12 @@ public sealed class PublisherWorker(
     private static async Task<TResult?> WaitForReplyAsync<TResult>(
         IChannel channel, string replyQueue, CancellationToken ct)
     {
-        var tcs = new TaskCompletionSource<TResult?>();
-        var consumer = new AsyncEventingBasicConsumer(channel);
+        TaskCompletionSource<TResult?> tcs = new();
+        AsyncEventingBasicConsumer consumer = new(channel);
 
         consumer.ReceivedAsync += (_, ea) =>
         {
-            var result = System.Text.Json.JsonSerializer.Deserialize<TResult>(
+            TResult? result = System.Text.Json.JsonSerializer.Deserialize<TResult>(
                 ea.Body.Span,
                 Messaging.Infrastructure.Serialization.MessagingJsonOptions.Default);
             tcs.TrySetResult(result);
@@ -104,8 +108,8 @@ public sealed class PublisherWorker(
 
         await channel.BasicConsumeAsync(replyQueue, autoAck: true, consumer, cancellationToken: ct);
 
-        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-        using var linked  = CancellationTokenSource.CreateLinkedTokenSource(ct, timeout.Token);
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+        using CancellationTokenSource linked  = CancellationTokenSource.CreateLinkedTokenSource(ct, timeout.Token);
         linked.Token.Register(() => tcs.TrySetResult(default));
 
         return await tcs.Task;

@@ -1,7 +1,11 @@
-namespace Messaging.Infrastructure;
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using Messaging.Contracts.Topology;
 using RabbitMQ.Client;
+
+namespace Messaging.Infrastructure;
 
 /// <summary>
 /// Declares all exchanges, queues, and DLQ bindings at startup.
@@ -44,14 +48,14 @@ public static class TopologyInitializer
         string routingKey,
         CancellationToken ct = default)
     {
-        var dlqName = Queues.DeadLetterQueue(queueName);
+        string dlqName = Queues.DeadLetterQueue(queueName);
 
         await channel.QueueDeclareAsync(dlqName, durable: true, exclusive: false,
             autoDelete: false, arguments: null, cancellationToken: ct);
         await channel.QueueBindAsync(dlqName, Exchanges.DeadLetter, dlqName,
             cancellationToken: ct);
 
-        var args = new Dictionary<string, object?>
+        Dictionary<string, object?> args = new()
         {
             ["x-dead-letter-exchange"]    = Exchanges.DeadLetter,
             ["x-dead-letter-routing-key"] = dlqName,

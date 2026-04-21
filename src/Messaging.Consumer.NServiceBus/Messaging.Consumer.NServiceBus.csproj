@@ -2,12 +2,16 @@
   <ItemGroup>
     <!-- Infrastructure is intentionally excluded: NServiceBus manages its own
          RabbitMQ.Client transport and pins to 6.x, which conflicts with the
-         7.x IChannel API used in Messaging.Infrastructure. -->
+         7.x IChannel API used in Messaging.Infrastructure.
+         RabbitMQ.Client is referenced directly at 6.x (VersionOverride) so
+         NsbTopologyBridge can create the E2E exchange binding at startup
+         using the same client version NServiceBus.RabbitMQ uses internally. -->
     <ProjectReference Include="../Messaging.Contracts/Messaging.Contracts.csproj" />
     <ProjectReference Include="../../aspire/Messaging.ServiceDefaults/Messaging.ServiceDefaults.csproj" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="NServiceBus" />
     <PackageReference Include="NServiceBus.RabbitMQ" />
     <PackageReference Include="NServiceBus.Extensions.Hosting" />
+    <PackageReference Include="RabbitMQ.Client" VersionOverride="6.8.1" />
   </ItemGroup>
 </Project>
