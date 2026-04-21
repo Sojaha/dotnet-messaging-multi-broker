@@ -12,12 +12,12 @@ namespace Messaging.Contracts.Orders.Events;
 /// </summary>
 [ContractVersion(ContractVersions.OrderPlaced)]
 public sealed record OrderPlaced(
-    Guid           MessageId,
-    string         CorrelationId,
+    Guid MessageId,
+    string CorrelationId,
     DateTimeOffset OccurredOn,
-    int            SchemaVersion,
-    Guid           OrderId,
-    Guid           CustomerId,
-    decimal        TotalAmount,
-    string         Currency
+    int SchemaVersion,
+    Guid OrderId,
+    Guid CustomerId,
+    decimal TotalAmount,
+    string Currency
 ) : IEvent;

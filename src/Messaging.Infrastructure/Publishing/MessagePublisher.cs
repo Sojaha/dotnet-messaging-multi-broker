@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
-using System.Text.Json;
 using Messaging.Contracts;
 using Messaging.Infrastructure.Serialization;
 using Messaging.Infrastructure.Topology;
 using RabbitMQ.Client;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace Messaging.Infrastructure.Publishing;
 
@@ -48,13 +48,13 @@ public sealed class MessagePublisher : IAsyncDisposable
         using Activity? activity = MessagingTelemetry.Publishing.StartActivity(
             $"{exchange} publish", ActivityKind.Producer);
 
-        activity?.SetTag("messaging.system",              "rabbitmq")
-                 .SetTag("messaging.operation",           "publish")
-                 .SetTag("messaging.destination",          exchange)
-                 .SetTag("messaging.destination.kind",    "exchange")
+        activity?.SetTag("messaging.system", "rabbitmq")
+                 .SetTag("messaging.operation", "publish")
+                 .SetTag("messaging.destination", exchange)
+                 .SetTag("messaging.destination.kind", "exchange")
                  .SetTag("messaging.rabbitmq.routing_key", routingKey)
-                 .SetTag("messaging.message.id",           message.MessageId.ToString())
-                 .SetTag("messaging.message.type",         typeof(T).Name);
+                 .SetTag("messaging.message.id", message.MessageId.ToString())
+                 .SetTag("messaging.message.type", typeof(T).Name);
 
         // CorrelationId is set by the caller on the message record.
         // It comes from Activity.Current.TraceId — see PublisherWorker for the pattern.
@@ -65,10 +65,10 @@ public sealed class MessagePublisher : IAsyncDisposable
         // the full parent span (trace ID + span ID) for proper distributed tracing.
         Dictionary<string, object?> headers = new()
         {
-            ["x-message-type"]   = typeof(T).FullName,
+            ["x-message-type"] = typeof(T).FullName,
             ["x-schema-version"] = (object)message.SchemaVersion,
             ["x-correlation-id"] = message.CorrelationId,
-            ["x-retry-count"]    = (object)0,
+            ["x-retry-count"] = (object)0,
         };
 
         if (activity is not null)
@@ -76,13 +76,13 @@ public sealed class MessagePublisher : IAsyncDisposable
 
         BasicProperties props = new()
         {
-            ContentType   = "application/json",
-            DeliveryMode  = DeliveryModes.Persistent,
-            MessageId     = message.MessageId.ToString(),
+            ContentType = "application/json",
+            DeliveryMode = DeliveryModes.Persistent,
+            MessageId = message.MessageId.ToString(),
             CorrelationId = message.CorrelationId,
-            ReplyTo       = replyTo,
-            Timestamp     = new AmqpTimestamp(message.OccurredOn.ToUnixTimeSeconds()),
-            Headers       = headers,
+            ReplyTo = replyTo,
+            Timestamp = new AmqpTimestamp(message.OccurredOn.ToUnixTimeSeconds()),
+            Headers = headers,
         };
 
         try
@@ -90,8 +90,8 @@ public sealed class MessagePublisher : IAsyncDisposable
             await channel.BasicPublishAsync(exchange, routingKey, false, props, body, ct);
 
             MessagingTelemetry.MessagesPublished.Add(1,
-                new KeyValuePair<string, object?>("messaging.destination",   exchange),
-                new KeyValuePair<string, object?>("messaging.message.type",  typeof(T).Name));
+                new KeyValuePair<string, object?>("messaging.destination", exchange),
+                new KeyValuePair<string, object?>("messaging.message.type", typeof(T).Name));
         }
         catch
         {

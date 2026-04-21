@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.Json;
 using Messaging.Infrastructure.Serialization;
 using RabbitMQ.Client;
+using System.Text.Json;
 
 namespace Messaging.Infrastructure.Publishing;
 
@@ -30,7 +30,7 @@ public sealed class QueryReplyPublisher
 
         BasicProperties props = new()
         {
-            ContentType   = "application/json",
+            ContentType = "application/json",
             CorrelationId = correlationId,
             Headers = new Dictionary<string, object?>
             {
@@ -40,11 +40,11 @@ public sealed class QueryReplyPublisher
 
         // Reply directly to the caller's transient queue — no exchange routing
         await channel.BasicPublishAsync(
-            exchange:        string.Empty,
-            routingKey:      replyTo,
-            mandatory:       false,
+            exchange: string.Empty,
+            routingKey: replyTo,
+            mandatory: false,
             basicProperties: props,
-            body:            body,
+            body: body,
             cancellationToken: ct);
     }
 }

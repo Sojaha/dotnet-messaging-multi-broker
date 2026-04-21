@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.OpenTelemetry;
@@ -68,7 +67,7 @@ public static class Extensions
         LoggerConfiguration logConfig = new LoggerConfiguration()
             .MinimumLevel.Information()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("System",    LogEventLevel.Warning)
+            .MinimumLevel.Override("System", LogEventLevel.Warning)
             .Enrich.FromLogContext()
             .Enrich.WithProperty("Application", builder.Environment.ApplicationName)
             // Always write to the terminal — useful in both local dotnet run and Aspire.
@@ -84,9 +83,9 @@ public static class Extensions
         {
             logConfig = logConfig.WriteTo.OpenTelemetry(options =>
             {
-                options.Endpoint           = otlpEndpoint;
-                options.Protocol           = OtlpProtocol.Grpc;
-                options.IncludedData       = IncludedData.TraceIdField | IncludedData.SpanIdField;
+                options.Endpoint = otlpEndpoint;
+                options.Protocol = OtlpProtocol.Grpc;
+                options.IncludedData = IncludedData.TraceIdField | IncludedData.SpanIdField;
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
                     ["service.name"] = builder.Environment.ApplicationName,

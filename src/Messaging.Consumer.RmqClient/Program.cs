@@ -5,8 +5,6 @@
 using Messaging.Consumer.RmqClient;
 using Messaging.Infrastructure.Publishing;
 using Messaging.ServiceDefaults;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);

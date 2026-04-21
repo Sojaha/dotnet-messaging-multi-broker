@@ -15,11 +15,11 @@ namespace Messaging.Contracts.Orders.Commands;
 /// </summary>
 [ContractVersion(ContractVersions.CancelOrder)]
 public sealed record CancelOrder(
-    Guid           MessageId,
-    string         CorrelationId,
+    Guid MessageId,
+    string CorrelationId,
     DateTimeOffset OccurredOn,
-    int            SchemaVersion,
-    Guid           OrderId,
-    string         RequestedBy,
-    string         Reason
+    int SchemaVersion,
+    Guid OrderId,
+    string RequestedBy,
+    string Reason
 ) : ICommand;

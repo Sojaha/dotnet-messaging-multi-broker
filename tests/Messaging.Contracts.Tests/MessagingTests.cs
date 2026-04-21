@@ -1,12 +1,15 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 namespace Messaging.Contracts.Tests;
 
 using FluentAssertions;
-using Xunit;
 using Messaging.Contracts.Orders.Events;
-using Messaging.Contracts.Orders.Queries;
 using Messaging.Contracts.Topology;
 using Messaging.Contracts.Versioning;
 using Messaging.Infrastructure.Topology;
+using Xunit;
 
 public class TopologyTests
 {
@@ -101,14 +104,14 @@ public class CorrelationIdTests
     {
         var correlationId = Guid.NewGuid().ToString();
         var msg = new OrderPlaced(
-            MessageId:     Guid.NewGuid(),
+            MessageId: Guid.NewGuid(),
             CorrelationId: correlationId,
-            OccurredOn:    DateTimeOffset.UtcNow,
+            OccurredOn: DateTimeOffset.UtcNow,
             SchemaVersion: ContractVersions.OrderPlaced,
-            OrderId:       Guid.NewGuid(),
-            CustomerId:    Guid.NewGuid(),
-            TotalAmount:   10m,
-            Currency:      "EUR");
+            OrderId: Guid.NewGuid(),
+            CustomerId: Guid.NewGuid(),
+            TotalAmount: 10m,
+            Currency: "EUR");
 
         msg.CorrelationId.Should().Be(correlationId);
     }
@@ -118,14 +121,14 @@ public class CorrelationIdTests
     {
         var correlationId = Guid.NewGuid().ToString();
         var msg = new OrderPlaced(
-            MessageId:     Guid.NewGuid(),
+            MessageId: Guid.NewGuid(),
             CorrelationId: correlationId,
-            OccurredOn:    DateTimeOffset.UtcNow,
+            OccurredOn: DateTimeOffset.UtcNow,
             SchemaVersion: ContractVersions.OrderPlaced,
-            OrderId:       Guid.NewGuid(),
-            CustomerId:    Guid.NewGuid(),
-            TotalAmount:   10m,
-            Currency:      "EUR");
+            OrderId: Guid.NewGuid(),
+            CustomerId: Guid.NewGuid(),
+            TotalAmount: 10m,
+            Currency: "EUR");
 
         var json = System.Text.Json.JsonSerializer.Serialize(msg,
             Messaging.Infrastructure.Serialization.MessagingJsonOptions.Default);

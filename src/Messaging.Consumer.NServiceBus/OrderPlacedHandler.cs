@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Messaging.Contracts.Orders.Events;
-using NServiceBus;
 
 namespace Messaging.Consumer.NServiceBus;
 

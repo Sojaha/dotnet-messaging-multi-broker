@@ -15,14 +15,14 @@ public static class TopologyResolver
     private static readonly Dictionary<Type, (string Exchange, string RoutingKey)> _map = new()
     {
         // Events → topic exchange
-        [typeof(OrderPlaced)]    = (Exchanges.OrderEvents,   RoutingKeys.OrderPlaced),
-        [typeof(OrderCancelled)] = (Exchanges.OrderEvents,   RoutingKeys.OrderCancelled),
+        [typeof(OrderPlaced)] = (Exchanges.OrderEvents, RoutingKeys.OrderPlaced),
+        [typeof(OrderCancelled)] = (Exchanges.OrderEvents, RoutingKeys.OrderCancelled),
 
         // Commands → direct exchange
-        [typeof(CancelOrder)]    = (Exchanges.OrderCommands, RoutingKeys.CancelOrder),
+        [typeof(CancelOrder)] = (Exchanges.OrderCommands, RoutingKeys.CancelOrder),
 
         // Queries → direct exchange
-        [typeof(GetOrderStatus)] = (Exchanges.OrderQueries,  RoutingKeys.GetOrderStatus),
+        [typeof(GetOrderStatus)] = (Exchanges.OrderQueries, RoutingKeys.GetOrderStatus),
     };
 
     public static (string Exchange, string RoutingKey) Resolve<T>() where T : IMessage

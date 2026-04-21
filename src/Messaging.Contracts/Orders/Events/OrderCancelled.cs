@@ -12,10 +12,10 @@ namespace Messaging.Contracts.Orders.Events;
 /// </summary>
 [ContractVersion(ContractVersions.OrderCancelled)]
 public sealed record OrderCancelled(
-    Guid           MessageId,
-    string         CorrelationId,
+    Guid MessageId,
+    string CorrelationId,
     DateTimeOffset OccurredOn,
-    int            SchemaVersion,
-    Guid           OrderId,
-    string         Reason
+    int SchemaVersion,
+    Guid OrderId,
+    string Reason
 ) : IEvent;

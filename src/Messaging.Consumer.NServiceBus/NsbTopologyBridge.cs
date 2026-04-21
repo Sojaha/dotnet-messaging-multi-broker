@@ -46,8 +46,8 @@ public sealed class NsbTopologyBridge(
         // E2E binding: orders.events (topic) → NSB fanout exchange, topic-filtered by routing key
         channel.ExchangeBind(
             destination: nsbExchange,
-            source:      Exchanges.OrderEvents,
-            routingKey:  RoutingKeys.OrderPlaced);
+            source: Exchanges.OrderEvents,
+            routingKey: RoutingKeys.OrderPlaced);
 
         logger.LogInformation(
             "NSB topology bridge: {Source} --[{Key}]--> {Dest}",

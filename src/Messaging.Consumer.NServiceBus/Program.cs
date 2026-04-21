@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.Json;
 using Messaging.Consumer.NServiceBus;
 using Messaging.ServiceDefaults;
-using Microsoft.Extensions.Hosting;
-using NServiceBus;
+using System.Text.Json;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.AddServiceDefaults();

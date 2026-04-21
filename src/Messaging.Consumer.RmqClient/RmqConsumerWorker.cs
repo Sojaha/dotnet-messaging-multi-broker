@@ -2,10 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
-using System.Globalization;
-using System.Text;
-using System.Text.Json;
 using Messaging.Contracts;
 using Messaging.Contracts.Topology;
 using Messaging.Infrastructure;
@@ -13,6 +9,10 @@ using Messaging.Infrastructure.Serialization;
 using Messaging.Infrastructure.Topology;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Diagnostics;
+using System.Globalization;
+using System.Text;
+using System.Text.Json;
 
 namespace Messaging.Consumer.RmqClient;
 
@@ -69,12 +69,12 @@ public sealed class RmqConsumerWorker(
                 IMessage message = (IMessage)JsonSerializer.Deserialize(
                     ea.Body.Span, type, MessagingJsonOptions.Default)!;
 
-                activity?.SetTag("messaging.system",        "rabbitmq")
-                         .SetTag("messaging.operation",     "receive")
-                         .SetTag("messaging.destination",    ea.Exchange)
-                         .SetTag("messaging.routing_key",    ea.RoutingKey)
-                         .SetTag("messaging.message.type",   typeName)
-                         .SetTag("messaging.message.id",     message.MessageId.ToString())
+                activity?.SetTag("messaging.system", "rabbitmq")
+                         .SetTag("messaging.operation", "receive")
+                         .SetTag("messaging.destination", ea.Exchange)
+                         .SetTag("messaging.routing_key", ea.RoutingKey)
+                         .SetTag("messaging.message.type", typeName)
+                         .SetTag("messaging.message.id", message.MessageId.ToString())
                          .SetTag("messaging.correlation_id", message.CorrelationId);
 
                 await dispatcher.DispatchAsync(message, ea.BasicProperties, channel, ct);
@@ -145,7 +145,7 @@ public sealed class RmqConsumerWorker(
         try
         {
             ActivityTraceId traceId = ActivityTraceId.CreateFromString(span.Slice(3, 32));
-            ActivitySpanId  spanId  = ActivitySpanId.CreateFromString(span.Slice(36, 16));
+            ActivitySpanId spanId = ActivitySpanId.CreateFromString(span.Slice(36, 16));
 
             byte.TryParse(span.Slice(53, 2), NumberStyles.HexNumber, null, out byte flagsByte);
             ActivityTraceFlags flags = (ActivityTraceFlags)flagsByte;
@@ -172,7 +172,7 @@ public sealed class RmqConsumerWorker(
         {
             string s => s,
             byte[] b => Encoding.UTF8.GetString(b),
-            _        => null,
+            _ => null,
         };
     }
 

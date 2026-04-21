@@ -20,20 +20,20 @@ public sealed class MessageDispatcher(
         IReadOnlyBasicProperties props,
         IChannel channel,
         CancellationToken ct) => message switch
-    {
-        // Events — fire and forget, no reply
-        OrderPlaced    m => HandleAsync(m, ct),
-        OrderCancelled m => HandleAsync(m, ct),
+        {
+            // Events — fire and forget, no reply
+            OrderPlaced m => HandleAsync(m, ct),
+            OrderCancelled m => HandleAsync(m, ct),
 
-        // Command — fire and forget, handler publishes downstream event
-        CancelOrder    m => HandleAsync(m, ct),
+            // Command — fire and forget, handler publishes downstream event
+            CancelOrder m => HandleAsync(m, ct),
 
-        // Query — must send a reply; channel is passed through so QueryReplyPublisher
-        // uses the worker's channel rather than requiring its own DI-registered one.
-        GetOrderStatus m => HandleAsync(m, props, channel, ct),
+            // Query — must send a reply; channel is passed through so QueryReplyPublisher
+            // uses the worker's channel rather than requiring its own DI-registered one.
+            GetOrderStatus m => HandleAsync(m, props, channel, ct),
 
-        _ => Task.CompletedTask,
-    };
+            _ => Task.CompletedTask,
+        };
 
     // ── Event handlers ────────────────────────────────────────────────────────
 
@@ -78,8 +78,8 @@ public sealed class MessageDispatcher(
             m.OrderId, m.CorrelationId);
 
         OrderStatusResult result = new(
-            OrderId:       m.OrderId,
-            Status:        "Confirmed",    // stub — real implementation queries a DB
+            OrderId: m.OrderId,
+            Status: "Confirmed",    // stub — real implementation queries a DB
             CorrelationId: m.CorrelationId);
 
         if (props.ReplyTo is not null)

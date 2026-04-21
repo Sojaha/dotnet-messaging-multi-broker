@@ -57,9 +57,9 @@ public static class TopologyInitializer
 
         Dictionary<string, object?> args = new()
         {
-            ["x-dead-letter-exchange"]    = Exchanges.DeadLetter,
+            ["x-dead-letter-exchange"] = Exchanges.DeadLetter,
             ["x-dead-letter-routing-key"] = dlqName,
-            ["x-queue-type"]              = "quorum",
+            ["x-queue-type"] = "quorum",
         };
         await channel.QueueDeclareAsync(queueName, durable: true, exclusive: false,
             autoDelete: false, arguments: args, cancellationToken: ct);

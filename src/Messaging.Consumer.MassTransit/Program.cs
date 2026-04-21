@@ -6,7 +6,6 @@ using MassTransit;
 using Messaging.Consumer.MassTransit;
 using Messaging.Contracts.Topology;
 using Messaging.ServiceDefaults;
-using Microsoft.Extensions.Hosting;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.AddServiceDefaults();
@@ -31,7 +30,7 @@ builder.Services.AddMassTransit(x =>
             ep.UseRawJsonDeserializer(RawSerializerOptions.AnyMessageType);
             ep.Bind(Exchanges.OrderEvents, b =>
             {
-                b.RoutingKey   = RoutingKeys.OrderPlaced;
+                b.RoutingKey = RoutingKeys.OrderPlaced;
                 b.ExchangeType = "topic";
             });
             ep.ConfigureConsumer<OrderPlacedConsumer>(ctx);
@@ -42,7 +41,7 @@ builder.Services.AddMassTransit(x =>
             ep.UseRawJsonDeserializer(RawSerializerOptions.AnyMessageType);
             ep.Bind(Exchanges.OrderEvents, b =>
             {
-                b.RoutingKey   = RoutingKeys.OrderCancelled;
+                b.RoutingKey = RoutingKeys.OrderCancelled;
                 b.ExchangeType = "topic";
             });
             ep.ConfigureConsumer<OrderCancelledConsumer>(ctx);

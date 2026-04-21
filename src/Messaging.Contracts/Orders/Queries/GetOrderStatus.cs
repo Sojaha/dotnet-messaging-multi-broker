@@ -15,11 +15,11 @@ namespace Messaging.Contracts.Orders.Queries;
 /// </summary>
 [ContractVersion(ContractVersions.GetOrderStatus)]
 public sealed record GetOrderStatus(
-    Guid           MessageId,
-    string         CorrelationId,
+    Guid MessageId,
+    string CorrelationId,
     DateTimeOffset OccurredOn,
-    int            SchemaVersion,
-    Guid           OrderId
+    int SchemaVersion,
+    Guid OrderId
 ) : IQuery<OrderStatusResult>;
 
 /// <summary>
@@ -27,7 +27,7 @@ public sealed record GetOrderStatus(
 /// sent directly to the caller's reply queue, not published to an exchange.
 /// </summary>
 public sealed record OrderStatusResult(
-    Guid   OrderId,
+    Guid OrderId,
     string Status,       // e.g. "Pending", "Confirmed", "Cancelled", "Shipped"
     string CorrelationId // echoed back so the caller can match the response
 );

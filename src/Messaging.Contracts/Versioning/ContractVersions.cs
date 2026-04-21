@@ -12,11 +12,11 @@ namespace Messaging.Contracts.Versioning;
 public static class ContractVersions
 {
     // Events
-    public const int OrderPlaced    = 1;
+    public const int OrderPlaced = 1;
     public const int OrderCancelled = 1;
 
     // Commands
-    public const int CancelOrder    = 1;
+    public const int CancelOrder = 1;
 
     // Queries
     public const int GetOrderStatus = 1;

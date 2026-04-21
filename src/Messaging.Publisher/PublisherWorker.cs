@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using Messaging.Contracts.Orders.Commands;
 using Messaging.Contracts.Orders.Events;
 using Messaging.Contracts.Orders.Queries;
-using Messaging.Contracts.Topology;
 using Messaging.Contracts.Versioning;
 using Messaging.Infrastructure;
 using Messaging.Infrastructure.Publishing;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Diagnostics;
 
 namespace Messaging.Publisher;
 
@@ -39,14 +38,14 @@ public sealed class PublisherWorker(
 
             // ── 1. Event — broadcast to all consumers ─────────────────────
             OrderPlaced placed = new(
-                MessageId:     Guid.NewGuid(),
+                MessageId: Guid.NewGuid(),
                 CorrelationId: correlationId,
-                OccurredOn:    DateTimeOffset.UtcNow,
+                OccurredOn: DateTimeOffset.UtcNow,
                 SchemaVersion: ContractVersions.OrderPlaced,
-                OrderId:       orderId,
-                CustomerId:    Guid.NewGuid(),
-                TotalAmount:   99.99m,
-                Currency:      "EUR");
+                OrderId: orderId,
+                CustomerId: Guid.NewGuid(),
+                TotalAmount: 99.99m,
+                Currency: "EUR");
 
             await publisher.PublishAsync(placed, ct);
             logger.LogInformation("[Event] OrderPlaced published {OrderId}", orderId);
@@ -55,13 +54,13 @@ public sealed class PublisherWorker(
 
             // ── 2. Command — point-to-point to one service ────────────────
             CancelOrder cancel = new(
-                MessageId:     Guid.NewGuid(),
+                MessageId: Guid.NewGuid(),
                 CorrelationId: correlationId,  // same correlation — same logical operation
-                OccurredOn:    DateTimeOffset.UtcNow,
+                OccurredOn: DateTimeOffset.UtcNow,
                 SchemaVersion: ContractVersions.CancelOrder,
-                OrderId:       orderId,
-                RequestedBy:   "demo-publisher",
-                Reason:        "Demo cancellation");
+                OrderId: orderId,
+                RequestedBy: "demo-publisher",
+                Reason: "Demo cancellation");
 
             await publisher.PublishAsync(cancel, ct);
             logger.LogInformation("[Command] CancelOrder sent {OrderId}", orderId);
@@ -74,11 +73,11 @@ public sealed class PublisherWorker(
                 autoDelete: true, cancellationToken: ct)).QueueName;
 
             GetOrderStatus query = new(
-                MessageId:     Guid.NewGuid(),
+                MessageId: Guid.NewGuid(),
                 CorrelationId: correlationId,
-                OccurredOn:    DateTimeOffset.UtcNow,
+                OccurredOn: DateTimeOffset.UtcNow,
                 SchemaVersion: ContractVersions.GetOrderStatus,
-                OrderId:       orderId);
+                OrderId: orderId);
 
             await publisher.PublishAsync(query, ct, replyTo: replyQueueName);
             logger.LogInformation("[Query] GetOrderStatus sent {OrderId}, reply queue: {ReplyQueue}",
@@ -109,7 +108,7 @@ public sealed class PublisherWorker(
         await channel.BasicConsumeAsync(replyQueue, autoAck: true, consumer, cancellationToken: ct);
 
         using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
-        using CancellationTokenSource linked  = CancellationTokenSource.CreateLinkedTokenSource(ct, timeout.Token);
+        using CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(ct, timeout.Token);
         linked.Token.Register(() => tcs.TrySetResult(default));
 
         return await tcs.Task;
